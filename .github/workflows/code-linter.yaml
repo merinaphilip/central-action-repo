@@ -29,4 +29,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install pylint
       - name: Run Pylint
-        run: pylint --recursive=y --reports=y --rcfile=.pylintrc . | tee pylint_output.txt
+        run: |
+          pylint --recursive=y --reports=y --rcfile=.pylintrc . | tee pylint_output.txt
+          rating=$(grep -oE 'Your code has been rated at [0-9]+\.[0-9][0-9]+/10' pylint_output.txt | awk '{print $7}' | cut -d'/' -f1 | cut -d'.' -f1)
+          if [[ "$rating" -lt 6 ]]; then echo "Low code rating, please fix them!" && exit 1; fi
